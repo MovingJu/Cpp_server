@@ -16,7 +16,9 @@ berry:
 	sh -c "g++ main.cpp $(files) $(add) -static && strip e"
 
 zip:
-	zip -r archive.zip static templates
+	zip -r archive.zip static templates e
+	scp -P $$berry_port ./archive.zip galesky@$$berry_ip:$(dir) 
+	rm archive.zip
 
 move:
 	scp -P $$berry_port ./$(e) galesky@$$berry_ip:$(dir)
