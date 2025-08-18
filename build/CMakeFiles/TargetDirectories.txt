@@ -1,3 +1,0 @@
-/Users/galesky/Documents/GitHub/onvacation_project/cpp_server/build/CMakeFiles/e.dir
-/Users/galesky/Documents/GitHub/onvacation_project/cpp_server/build/CMakeFiles/edit_cache.dir
-/Users/galesky/Documents/GitHub/onvacation_project/cpp_server/build/CMakeFiles/rebuild_cache.dir
