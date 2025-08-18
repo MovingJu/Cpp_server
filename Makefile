@@ -1,25 +1,19 @@
-e?=e
-version?=20
 port?=8000
-files?=
 
-extern=./extern
-add= -std=c++$(version) -o $(e) -lpthread -I$(extern) `pkg-config --cflags --libs opencv4`
-docker_img_name=berry_cpp
+platform=linux/arm64,linux/amd64#,linux/arm/v7
+docker_img_tag=cpp_server
 
-d_build:
+.PHONY: build run
+build:
 	docker buildx build \
-		--platform linux/arm64,linux/amd64,linux/arm/v7 \
-		-t movingju/test:cpp_server \
+		--platform  $(platform) \
+		-t movingju/test:$(docker_img_tag) \
 		--push .
 
-d_run:
-	docker run -p $(port):8000 movingju/test:cpp_server
-
-build:
-	g++ main.cpp $(files) $(add) && strip e
+test:
+	docker build \
+	-t movingju/test:$(docker_img_tag)\
+	.
 
 run:
-	make build
-	./$(e)
-	
+	docker run -p $(port):8000 movingju/test:$(docker_img_tag)

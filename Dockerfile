@@ -4,14 +4,18 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         libopencv-dev \
         g++ \
-        pkg-config \
-        make && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+        build-essential \
+        cmake
 
 WORKDIR /app
 
-COPY . .
+COPY ./extern ./extern
+COPY ./include ./include
+COPY ./src ./src
+COPY ./CMakeLists.txt .
 
-RUN make build
+RUN cmake -S . -B build
 
-CMD ["./e"]
+RUN cd build && make
+
+CMD ["./build/e"]
