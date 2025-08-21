@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "*.cpp": "cpp",
-        "string": "cpp",
-        "map": "cpp",
-        "__node_handle": "cpp"
-    }
-}

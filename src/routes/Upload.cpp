@@ -1,10 +1,10 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
-#include <vector>
+
 #include "crow.h"
 
-#include "../../include/Upload.h"
+#include <Upload.h>
 
 void Upload::upload_(crow::response& res){
     res.code = 200;
