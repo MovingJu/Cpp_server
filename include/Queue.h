@@ -69,6 +69,10 @@ class Queue {
             return result;
         }
     public:
+        int get_length(){
+            return length;
+        }
+    public:
         class iterator {
             Node<T>* node;
         public:

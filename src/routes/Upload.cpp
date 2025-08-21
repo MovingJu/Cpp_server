@@ -1,16 +1,11 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
-
-#include "crow.h"
+#include <vector>
+#include <crow.h>
 
 #include <Upload.h>
-
-void Upload::upload_(crow::response& res){
-    res.code = 200;
-    res.end();
-    return;
-}
+#include <Send_queue.h>
 
 void Upload::upload_(const crow::request& req, crow::response& res){
     const char* w = req.url_params.get("width");
@@ -54,7 +49,8 @@ void Upload::upload_(crow::websocket::connection& conn, const std::string& data,
     cv::cvtColor(img, gray, cv::COLOR_RGBA2GRAY);
     cv::cvtColor(gray, out, cv::COLOR_GRAY2RGBA);
 
-    conn.send_binary(std::string((char*)out.data, out.total() * out.elemSize()));
+    // conn.send_binary(std::string((char*)out.data, out.total() * out.elemSize()));
+    Send_queue::push_(&conn, "image_gray", std::string((char*)out.data, out.total() * out.elemSize()));
 
     return;
 }
