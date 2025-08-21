@@ -1,5 +1,6 @@
 file(GLOB_RECURSE LIB_SOURCES
     modules/*.cpp
+    modules/models/*.cpp
     routes/*.cpp
 )
 

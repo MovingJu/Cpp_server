@@ -7,7 +7,8 @@
 
 #include <main.h>
 
-extern std::atomic<bool> running; 
+extern std::atomic<bool> running;
+
 void sending_thread() {
     using namespace std::chrono_literals;
 
@@ -20,14 +21,14 @@ void sending_thread() {
         auto item = Send_queue::pop_();
 
         crow::websocket::connection* conn = std::get<0>(item);
+        if (!conn || !(Send_queue::is_conn_valid())){
+            continue;
+        }
         crow::json::wvalue header = std::get<1>(item);
         std::string img_binary = std::get<2>(item);
-
-        if (conn) {
-            conn->send_text(header.dump());
-            conn->send_binary(img_binary);
-            conn->send_text("END");
-        }
+        
+        conn->send_text(header.dump());
+        conn->send_binary(img_binary);
     }
 
     std::cout << "Sending thread exiting gracefully." << std::endl;

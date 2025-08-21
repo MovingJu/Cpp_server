@@ -59,7 +59,7 @@ class Queue {
             length++;
         }
         T pop_() {
-            if (front_node->get_next() == nullptr) throw std::runtime_error("Queue is empty");
+            if (length == 0) throw std::runtime_error("Queue is empty");
             Node<T>* temp = front_node->get_next();
             T result = temp->get_data();
             front_node->set_next_(temp->get_next());
@@ -67,6 +67,10 @@ class Queue {
             delete temp;
             length--;
             return result;
+        }
+        void empty_(){
+            length = 0;
+            return;
         }
     public:
         int get_length(){
