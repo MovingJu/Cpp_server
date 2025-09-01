@@ -9,9 +9,7 @@
 
 void Upload::upload_(crow::websocket::connection& conn, const std::string& data, bool is_binary){
     if (!is_binary) {return;}
-
     const int width = 178, height = 218;
-
     if (data.size() != width * height * 4) {
         std::cerr << "Invalid data size: " << data.size() << std::endl;
         return;

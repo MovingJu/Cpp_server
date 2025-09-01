@@ -6,6 +6,6 @@
 
 class Colors {
     public:
-        static cv::Mat blue();
-        static cv::Mat gray();
+        static cv::Mat blue(cv::Mat& img);
+        static cv::Mat gray(cv::Mat& img);
 };

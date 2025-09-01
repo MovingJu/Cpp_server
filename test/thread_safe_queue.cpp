@@ -7,17 +7,15 @@
 Functional<Queue, int> shared;
 Functional<Single_threaded_Queue, int> unsafe;
 
-
-// 이렇게 숫자가 작으면 뮤택스 없이도 잘 되는 듯 보임..
-// 하지만 다른 쓰레드가 공유 자원에 접근하기 전에 처리가 끝나버렸기 때문임.
+// 숫자가 커진다면 공유 자원 접근으로 인한 에러가 분명해진다.
 void push_to_shared(int num){
-    for (int i=0; i<100; i++){
+    for (int i=0; i<10000; i++){
         shared.push_(i * num);
     }
 }
 
 void push_to_unsafe(int num){
-    for (int i=0; i<100; i++){
+    for (int i=0; i<10000; i++){
         unsafe.push_(i * num);
     }
 }

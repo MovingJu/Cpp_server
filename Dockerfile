@@ -12,10 +12,11 @@ WORKDIR /app
 COPY ./extern ./extern
 COPY ./include ./include
 COPY ./src ./src
+COPY ./test ./test
 COPY ./CMakeLists.txt .
 
-RUN cmake -S . -B build
+RUN cmake . -B build
 
-RUN cd build && make
+RUN cmake --build build
 
-CMD ["./build/e"]
+CMD ["./build/src/e"]

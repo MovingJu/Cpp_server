@@ -3,7 +3,7 @@
 
 /**
  * @brief Class for Functional Programming
- * @tparam Container : Datatype with `.begin()`, `.end()`, `.push()`, `.pop()`, `Copyconstrcter`
+ * @tparam Container : Datatype with `.begin()`, `.end()`, `.push()`, `.pop()`, `Copyconstructor`
  * @tparam T : Datatype that goes into Container.
  * @remark : template-template parameter 문법에 대해 더 알고싶다면 [https://wikidocs.net/422](https://wikidocs.net/422) 를 참고해주세요
  */

@@ -1,27 +1,20 @@
 #pragma once
 
-#include <mutex>
-
 #include "Node.h"
 
 template <class T>
-class Queue {
+class Single_threaded_Queue {
     private:
-    
-        // mutable 키워드가 없을 경우, const 포인터가 들어왔을때 이터레이터에서 버그가 발생합니다.
-        // 이를 mutable 없이 multi-thread safe한 클래스로 바꿀 수 있는 분을 찾습니다.
-        mutable std::mutex exclude;
-
         int length = 0;
         Node<T>* front_node;
         Node<T>* back_node;
     public:
-        Queue(){
+        Single_threaded_Queue(){
             back_node = new Node<T>();
             this->front_node = back_node;
             length = 0;
         }
-        Queue(const Queue& q) {
+        Single_threaded_Queue(const Single_threaded_Queue& q) {
             back_node = new Node<T>();
             front_node = back_node;
             length = 0;
@@ -29,8 +22,8 @@ class Queue {
                 push_(node->get_data());
             }
         }
-        Queue& operator=(const Queue& q) {
-            std::unique_lock<std::mutex> lock(exclude);
+        Single_threaded_Queue& operator=(const Single_threaded_Queue& q) {
+            
             if (this != &q) {
                 while(front_node != nullptr){
                     Node<T>* temp_ptr = front_node->get_next();
@@ -46,8 +39,8 @@ class Queue {
             }
             return *this;
         }
-        ~Queue(){
-            std::unique_lock<std::mutex> lock(exclude);
+        ~Single_threaded_Queue(){
+            
             while(front_node != nullptr){
                 Node<T>* temp_ptr = front_node->get_next();
                 delete front_node;
@@ -56,22 +49,22 @@ class Queue {
         }
     public:
         void push_(const T& _data){
-            std::unique_lock<std::mutex> lock(exclude);
+            
             Node<T>* temp = new Node(_data);
             back_node->set_next_(temp);
             back_node = temp;
             length++;
         }
         void push_(T&& _data){
-            std::unique_lock<std::mutex> lock(exclude);
+            
             Node<T>* temp = new Node(std::move(_data));
             back_node->set_next_(temp);
             back_node = temp;
             length++;
         }
         T pop_() {
-            std::unique_lock<std::mutex> lock(exclude);
-            if (length == 0) throw std::runtime_error("Queue is empty");
+            
+            if (length == 0) throw std::runtime_error("Single_threaded_Queue is empty");
             Node<T>* temp = front_node->get_next();
             T result = temp->get_data();
             front_node->set_next_(temp->get_next());
@@ -81,13 +74,13 @@ class Queue {
             return result;
         }
         void empty_(){
-            std::unique_lock<std::mutex> lock(exclude);
+            
             length = 0;
             return;
         }
     public:
         int get_length(){
-            std::unique_lock<std::mutex> lock(exclude);
+            
             return length;
         }
     public:
@@ -101,14 +94,14 @@ class Queue {
             bool operator!=(const iterator& other) const { return node != other.node; }
         };
         iterator begin() { 
-            std::unique_lock<std::mutex> lock(exclude);
+            
             return iterator(front_node->get_next()); 
         }
         iterator end() { return iterator(nullptr); }
 
         iterator begin() const { 
-            std::unique_lock<std::mutex> lock(exclude);
+            
             return iterator(front_node->get_next()); 
         }
-        iterator end() const { return iterator(nullptr);}
+        iterator end() const { return iterator(nullptr); }
 };

@@ -5,9 +5,7 @@
 #include <thread>
 #include <atomic>
 
-#include <main.h>
-
-extern std::atomic<bool> running;
+std::atomic<bool> running;
 
 void sending_thread() {
     using namespace std::chrono_literals;
