@@ -3,3 +3,7 @@ extern/*
 e
 build/*
 .vscode
+
+libtorch
+
+*.pt

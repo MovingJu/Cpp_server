@@ -8,11 +8,10 @@
 std::atomic<bool> running;
 
 void sending_thread() {
-    using namespace std::chrono_literals;
 
     while (running) {
         if (Send_queue::is_empty()) {
-            std::this_thread::sleep_for(20ms);
+            std::this_thread::sleep_for(std::chrono::milliseconds(20));
             continue;
         }
 
@@ -22,10 +21,10 @@ void sending_thread() {
         if (!conn || !(Send_queue::is_conn_valid())){
             continue;
         }
-        crow::json::wvalue header = std::get<1>(item);
+        std::string header = std::get<1>(item);
         std::string img_binary = std::get<2>(item);
         
-        conn->send_text(header.dump());
+        conn->send_text(header);
         conn->send_binary(img_binary);
     }
 

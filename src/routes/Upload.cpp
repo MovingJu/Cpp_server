@@ -1,11 +1,14 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
-#include <vector>
+#include <thread>
+#include <future>
 #include <crow.h>
 
 #include <Upload.h>
 #include <Send_queue.h>
+#include <Image_threads.h>
+#include <Colors.h>
 
 void Upload::upload_(crow::websocket::connection& conn, const std::string& data, bool is_binary){
     if (!is_binary) {return;}
@@ -16,12 +19,8 @@ void Upload::upload_(crow::websocket::connection& conn, const std::string& data,
     }
     
     cv::Mat img(height, width, CV_8UC4, (void*)data.data());
-
-    cv::Mat gray, out;
-    cv::cvtColor(img, gray, cv::COLOR_RGBA2GRAY);
-    cv::cvtColor(gray, out, cv::COLOR_GRAY2RGBA);
-
-    Send_queue::push_(&conn, "image_gray", std::string((char*)out.data, out.total() * out.elemSize()));    
+    
+    Image_threads::push_(img);
 
     return;
 }
