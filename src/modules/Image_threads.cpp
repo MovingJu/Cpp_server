@@ -3,66 +3,72 @@
 #include <opencv2/core.hpp>
 #include <chrono>
 #include <thread>
+#include <atomic>
 #include <sending_thread.h>
+#include <mutex>
 #include <Send_queue.h>
 #include <crow.h>
+#include <tuple>
 
 #include <Queue.h>
 #include <Colors.h>
 #include <Torch.h>
 
+extern std::atomic<bool> running;
 unsigned short Image_threads::num_thread = 0;
 std::thread* Image_threads::thread_pool;
-Queue<cv::Mat> Image_threads::work_queue;
+Queue<std::tuple<crow::websocket::connection*, cv::Mat>> Image_threads::work_queue;
+std::mutex Image_threads::exclude;
 
-void Image_threads::work(crow::websocket::connection* conn){
+void Image_threads::work(){
     Torch hand_model{"./models/hand_model_c.pt"};
     Torch finger_model{"./models/hand_model_c.pt"};
     while (running) {
+        std::unique_lock<std::mutex> lock(exclude);
         if (work_queue.get_length() == 0) {
             std::this_thread::sleep_for(std::chrono::milliseconds(20));
             continue;
         }
-        
-        try {
-            
-            cv::Mat item = work_queue.pop_();
-            cv::Mat gray = Colors::gray(item);
-            cv::Mat blue = Colors::blue(item);
+        auto item = work_queue.pop_();
+        lock.unlock();
 
-            const int hand = hand_model.process(item);
-            const int finger = finger_model.process(item);
+        crow::websocket::connection* conn = std::get<0>(item);
+        cv::Mat img = std::get<1>(item);
 
-            Send_queue::push_(conn, "image_gray", std::string((char*)gray.data, gray.total() * gray.elemSize()));
-            Send_queue::push_(conn, "image_blue", std::string((char*)blue.data, blue.total() * blue.elemSize()));
-            Send_queue::push_(conn, "string_hand", std::to_string(hand));
-            Send_queue::push_(conn, "string_finger", std::to_string(finger));
+        cv::Mat gray = Colors::gray(img).clone();
+        cv::Mat blue = Colors::blue(img).clone();
 
-        } 
-        catch (const std::runtime_error& e) {
-            continue;
-        }
+        const int hand = hand_model.process(img);
+        const int finger = finger_model.process(img);
 
-        
+        Send_queue::push_(conn, "image_gray", std::string((char*)gray.data, gray.total() * gray.elemSize()));
+        Send_queue::push_(conn, "image_blue", std::string((char*)blue.data, blue.total() * blue.elemSize()));
+        Send_queue::push_(conn, "string_hand", std::to_string(hand));
+        Send_queue::push_(conn, "string_finger", std::to_string(finger));
+
     }
 
     std::cout << "Process thread exiting gracefully." << std::endl;
 }
 
-void Image_threads::create(crow::websocket::connection* conn, const unsigned short num_thread = 3){
-    thread_pool = new std::thread[num_thread];
-    for (int i=0; i<num_thread; i++){
-        thread_pool[i] = std::thread(&Image_threads::work, conn);
+void Image_threads::create(const unsigned short _num_thread = 3){
+    Image_threads::num_thread = _num_thread;
+
+    thread_pool = new std::thread[_num_thread];
+    for (int i=0; i<_num_thread; i++){
+        thread_pool[i] = std::thread(&Image_threads::work);
     }
 }
 
 void Image_threads::join(){
-    for (int i=0; i<num_thread; i++){
+    running = false;
+    for (int i=0; i<Image_threads::num_thread; i++){
         thread_pool[i].join();
     }
     delete[] thread_pool;
 }
 
-void Image_threads::push_(const cv::Mat& img){
-    work_queue.push_(img);
+void Image_threads::push_(crow::websocket::connection* conn, const cv::Mat& img){
+    auto temp = std::make_tuple(conn, img);
+    work_queue.push_(temp);
 }

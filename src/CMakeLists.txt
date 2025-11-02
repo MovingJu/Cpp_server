@@ -22,3 +22,5 @@ add_executable(e main.cpp)
 target_link_libraries(e 
     PRIVATE cpp_server_lib
 )
+
+file(COPY ${CMAKE_SOURCE_DIR}/models DESTINATION ${CMAKE_BINARY_DIR}/src)

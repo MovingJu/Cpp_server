@@ -2,7 +2,6 @@
 
 typedef std::tuple<crow::websocket::connection*, std::string, const std::string> Send_tuple;
 
-bool Send_queue::conn_valid = true;
 std::mutex Send_queue::send_queue_mutex;
 Queue<Send_tuple> Send_queue::send_queue;
 std::condition_variable Send_queue::conditional_var;
@@ -35,14 +34,4 @@ bool Send_queue::is_empty(){
     bool result = (send_queue.get_length() == 0);
     lock.unlock();
     return result;
-}
-bool Send_queue::is_conn_valid(){
-    std::unique_lock<std::mutex> lock(send_queue_mutex);
-    bool result = conn_valid;
-    lock.unlock();
-    return result;
-}
-void Send_queue::set_conn_valid(bool setter){
-    std::unique_lock<std::mutex> lock(send_queue_mutex);
-    conn_valid = setter;
 }

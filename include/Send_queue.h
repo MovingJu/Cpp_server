@@ -3,15 +3,16 @@
 #include <condition_variable>
 #include <mutex>
 #include <tuple>
+#include <unordered_map>
 #include <string>
 #include <crow.h>
 #include <Queue.h>
 
 typedef std::tuple<crow::websocket::connection*, std::string, const std::string> Send_tuple;
 
-class Send_queue{
+class Send_queue {
     private:
-        static bool conn_valid;
+        static std::unordered_map<crow::websocket::connection*, bool> validity_table;
         static std::condition_variable conditional_var;
         static std::mutex send_queue_mutex;
         static Queue<Send_tuple> send_queue;
@@ -21,6 +22,4 @@ class Send_queue{
         static void empty_();
     public:
         static bool is_empty();
-        static bool is_conn_valid();
-        static void set_conn_valid(bool setter);
 };

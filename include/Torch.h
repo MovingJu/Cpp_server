@@ -7,7 +7,6 @@
 class Torch {
 private:
     torch::jit::script::Module model;
-    mutable std::mutex exclude;
 public:
     Torch(const std::string& path) {
         try {

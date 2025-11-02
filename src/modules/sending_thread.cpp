@@ -18,7 +18,7 @@ void sending_thread() {
         auto item = Send_queue::pop_();
 
         crow::websocket::connection* conn = std::get<0>(item);
-        if (!conn || !(Send_queue::is_conn_valid())){
+        if (!conn){
             continue;
         }
         std::string header = std::get<1>(item);

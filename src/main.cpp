@@ -6,38 +6,31 @@
 #include <sending_thread.h>
 #include <Image_threads.h>
 
-int main()
-{
+int main() {
     crow::App<CORS> app;
+    
+    // Initializing
     std::thread send_thread;
     extern std::atomic<bool> running;
-    running = false;
+    running = true;
+    send_thread = std::thread(&sending_thread);
+    Image_threads::create(3);
 
     CROW_ROUTE(app, "/ws")
         .websocket(&app)
-        .onopen([&](crow::websocket::connection &conn)
-            {
-                running = true;
-                send_thread = std::thread(&sending_thread);
-                Image_threads::create(&conn, 3);
-
-                Send_queue::set_conn_valid(running);
-                std::cout << "WebSocket Connected!" << '\n'; 
+        .onopen([&](crow::websocket::connection &conn){
+                std::cout << "WebSocket Connected!" << '\n';
             })
 
-        .onclose([&](crow::websocket::connection &conn, const std::string &msg, unsigned short code)
-            {
-                running = false;
-                Image_threads::join();
-                Send_queue::set_conn_valid(running);
+        .onclose([&](crow::websocket::connection &conn, const std::string &msg, unsigned short code){
                 Send_queue::empty_();
 
-                send_thread.join();
                 std::cout << code << ", WebSocket Closed : " << msg << '\n'; 
             })
 
-        .onmessage([](crow::websocket::connection &conn, const std::string &data, bool is_binary)
-                   { return Upload::upload_(conn, data, is_binary); });
+        .onmessage([](crow::websocket::connection &conn, const std::string &data, bool is_binary){ 
+                return Upload::upload_(conn, data, is_binary); 
+            });
 
     CROW_ROUTE(app, "/test")([](){
         return "Testing! the server is on running!";
@@ -47,14 +40,11 @@ int main()
         //    .multithreaded()
         .run();
 
-    if (running)
-    {
-        running = false;
-        Image_threads::join();
-        Send_queue::set_conn_valid(running);
-        Send_queue::empty_();
-        send_thread.join();
-    }
+    // Closing.
+    running = false;
+    Image_threads::join();
+    Send_queue::empty_();
+    send_thread.join();
 
     return 0;
 }

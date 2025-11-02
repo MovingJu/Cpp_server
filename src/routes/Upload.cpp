@@ -20,7 +20,7 @@ void Upload::upload_(crow::websocket::connection& conn, const std::string& data,
     
     cv::Mat img(height, width, CV_8UC4, (void*)data.data());
     
-    Image_threads::push_(img);
+    Image_threads::push_(&conn, img);
 
     return;
 }

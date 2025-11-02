@@ -6,7 +6,6 @@
 #include <iostream>
 
 torch::Tensor Torch::preprocess(const cv::Mat& img) {
-    std::unique_lock<std::mutex> lock(exclude);
 
     // RGBA -> RGB
     cv::Mat rgb;
@@ -25,7 +24,6 @@ torch::Tensor Torch::preprocess(const cv::Mat& img) {
 }
 
 int Torch::process(const cv::Mat& img) {
-    std::unique_lock<std::mutex> lock(exclude);
     torch::Tensor input = preprocess(img);
     model.eval();
 
@@ -33,3 +31,4 @@ int Torch::process(const cv::Mat& img) {
     auto pred = output.argmax(1);
     return pred.item<int>();
 }
+
