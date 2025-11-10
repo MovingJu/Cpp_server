@@ -5,7 +5,7 @@ RUN apt-get update && \
         libopencv-dev \
         g++ \
         build-essential \
-        cmakes
+        cmake
 
 WORKDIR /app
 
