@@ -8,11 +8,16 @@ RUN apt-get update && \
         g++ \
         build-essential \
         cmake
-
-RUN wget https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-2.9.0%2Bcpu.zip
-RUN unzip ./libtorch
+RUN apt-get install -y --no-install-recommends \
+        wget \
+        unzip
+RUN wget --no-check-certificate \
+    https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-2.9.0%2Bcpu.zip
+        
+RUN unzip libtorch-shared-with-deps-2.9.0+cpu.zip
 
 COPY ./extern ./extern
+COPY ./models ./models
 COPY ./include ./include
 COPY ./src ./src
 COPY ./CMakeLists.txt .
