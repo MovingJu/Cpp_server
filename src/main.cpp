@@ -1,10 +1,10 @@
 #include <thread>
 #include <atomic>
 #include <crow.h>
-#include <__init__.h>
-#include <Send_queue.h>
-#include <sending_thread.h>
+#include <CORS.h>
+#include <Sending_thread.h>
 #include <Image_threads.h>
+#include <Upload.h>
 
 int main() {
     crow::App<CORS> app;
@@ -13,7 +13,7 @@ int main() {
     std::thread send_thread;
     extern std::atomic<bool> running;
     running = true;
-    send_thread = std::thread(&sending_thread);
+    send_thread = std::thread(&Sending_thread::work);
     Image_threads::create(3);
 
     CROW_ROUTE(app, "/ws")
@@ -23,7 +23,7 @@ int main() {
             })
 
         .onclose([&](crow::websocket::connection &conn, const std::string &msg, unsigned short code){
-                Send_queue::empty_();
+                Sending_thread::empty_();
 
                 std::cout << code << ", WebSocket Closed : " << msg << '\n'; 
             })
@@ -43,7 +43,7 @@ int main() {
     // Closing.
     running = false;
     Image_threads::join();
-    Send_queue::empty_();
+    Sending_thread::empty_();
     send_thread.join();
 
     return 0;

@@ -4,9 +4,8 @@
 #include <chrono>
 #include <thread>
 #include <atomic>
-#include <sending_thread.h>
 #include <mutex>
-#include <Send_queue.h>
+#include <Sending_thread.h>
 #include <crow.h>
 #include <tuple>
 
@@ -41,10 +40,10 @@ void Image_threads::work(){
         const int hand = hand_model.process(img);
         const int finger = finger_model.process(img);
 
-        Send_queue::push_(conn, "image_gray", std::string((char*)gray.data, gray.total() * gray.elemSize()));
-        Send_queue::push_(conn, "image_blue", std::string((char*)blue.data, blue.total() * blue.elemSize()));
-        Send_queue::push_(conn, "string_hand", std::to_string(hand));
-        Send_queue::push_(conn, "string_finger", std::to_string(finger));
+        Sending_thread::push_(conn, "image_gray", std::string((char*)gray.data, gray.total() * gray.elemSize()));
+        Sending_thread::push_(conn, "image_blue", std::string((char*)blue.data, blue.total() * blue.elemSize()));
+        Sending_thread::push_(conn, "string_hand", std::to_string(hand));
+        Sending_thread::push_(conn, "string_finger", std::to_string(finger));
 
     }
 

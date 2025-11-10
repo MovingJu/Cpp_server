@@ -5,18 +5,17 @@ RUN apt-get update && \
         libopencv-dev \
         g++ \
         build-essential \
-        cmake
+        cmakes
 
 WORKDIR /app
 
 COPY ./extern ./extern
 COPY ./include ./include
 COPY ./src ./src
-COPY ./test ./test
 COPY ./CMakeLists.txt .
 
 RUN cmake . -B build
 
 RUN cmake --build build
 
-CMD ["./build/src/e"]
+CMD ["./build/e"]
