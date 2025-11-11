@@ -19,11 +19,13 @@ int main() {
     CROW_ROUTE(app, "/ws")
         .websocket(&app)
         .onopen([&](crow::websocket::connection &conn){
+            Sending_thread::valid_conn.insert({&conn, true});
             std::cout << "WebSocket Connected!" << '\n';
         })
 
         .onclose([&](crow::websocket::connection &conn, const std::string &msg, unsigned short code){
-            Sending_thread::empty_();
+            Sending_thread::valid_conn.erase(&conn);
+            // Sending_thread::empty_();
 
             std::cout << code << ", WebSocket Closed : " << msg << '\n'; 
         })

@@ -3,6 +3,7 @@
 std::atomic<bool> running;
 typedef std::tuple<crow::websocket::connection*, std::string, const std::string> Send_tuple;
 
+std::unordered_map<crow::websocket::connection*, bool> Sending_thread::valid_conn;
 std::condition_variable Sending_thread::conditional_var;
 std::mutex Sending_thread::send_queue_mutex;
 Queue<Send_tuple> Sending_thread::send_queue;
@@ -17,6 +18,10 @@ void Sending_thread::work(){
         auto item = Sending_thread::pop_();
 
         crow::websocket::connection* conn = std::get<0>(item);
+        if ((Sending_thread::valid_conn.find(conn) == Sending_thread::valid_conn.end()) 
+            || !Sending_thread::valid_conn[conn]){
+            continue;
+        }
         if (!conn){
             continue;
         }

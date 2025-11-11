@@ -12,6 +12,7 @@ typedef std::tuple<crow::websocket::connection*, std::string, const std::string>
 extern std::atomic<bool> running;
 
 namespace Sending_thread {
+    extern std::unordered_map<crow::websocket::connection*, bool> valid_conn;
     extern std::condition_variable conditional_var;
     extern std::mutex send_queue_mutex;
     extern Queue<Send_tuple> send_queue;
