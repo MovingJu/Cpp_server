@@ -1,4 +1,4 @@
-#include <Yolo_inference.h>
+#include <Onnx_inference.h>
 
 Inference::Inference() {}
 
@@ -86,9 +86,10 @@ std::vector<Detection> Inference::runInference(const cv::Mat& input)
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_int_distribution<int> dis(100, 255);
-        result.color = cv::Scalar(dis(gen),
-            dis(gen),
-            dis(gen));
+        // result.color = cv::Scalar(dis(gen),
+        //     dis(gen),
+        //     dis(gen));
+        result.color = cv::Scalar(34, 34, 34);
 
         result.className = classes[result.class_id];
         result.box = boxes[idx];
@@ -143,26 +144,28 @@ cv::Mat Inference::formatToSquare(const cv::Mat& source)
 
 cv::Mat Inference::draw_box(const cv::Mat& img, const std::vector<Detection>& detected_objects) const {
     int detections = static_cast<int>(detected_objects.size());
-    cv::Mat result = img.clone();
+    cv::Mat result;
+    cv::cvtColor(img, result, cv::COLOR_RGBA2BGR);
     
-    for (int i = 0; i < detections; ++i)
+    for (int i = 0; i < detections; ++i) // Generating bounding boxes for objects.
     {
         Detection detection = detected_objects[i];
 
         cv::Rect box = detection.box;
         cv::Scalar color = detection.color;
 
-        cv::rectangle(result, box, color, 2);
+        cv::rectangle(result, box, color, 1);
 
         std::string classString = detection.className + ' ' + std::to_string(detection.confidence).substr(0, 4);
         cv::Size textSize = cv::getTextSize(classString, cv::FONT_HERSHEY_DUPLEX, 1, 2, 0);
-        cv::Rect textBox(box.x, box.y - 40, textSize.width + 10, textSize.height + 20);
+        cv::Rect textBox(box.x, box.y - 27, textSize.width - 90, textSize.height + 5);
 
         cv::rectangle(result, textBox, color, cv::FILLED);
-        cv::putText(result, classString, cv::Point(box.x + 5, box.y - 10), cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar(0, 0, 0), 2, 0);
+        cv::putText(result, classString, cv::Point(box.x + 5, box.y - 10), cv::FONT_HERSHEY_DUPLEX, 0.5, cv::Scalar(255, 255, 255), 1, 0);
     }
 
     cv::resize(result, result, cv::Size(178, 218));
+    cv::cvtColor(result, result, cv::COLOR_BGR2RGBA);
 
     return result;
 }

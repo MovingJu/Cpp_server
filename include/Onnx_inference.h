@@ -37,6 +37,7 @@ private:
     std::string classesPath{};
     bool cudaEnabled{};
 
+    // Yolo model 기본 분류 클래스
     std::vector<std::string> classes{
     "person",
     "bicycle",
