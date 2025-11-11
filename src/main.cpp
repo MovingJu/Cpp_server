@@ -3,8 +3,8 @@
 #include <crow.h>
 #include <CORS.h>
 #include <Sending_thread.h>
-#include <Image_threads.h>
 #include <Upload.h>
+#include <Image_threads.h>
 
 int main() {
     crow::App<CORS> app;
@@ -19,18 +19,18 @@ int main() {
     CROW_ROUTE(app, "/ws")
         .websocket(&app)
         .onopen([&](crow::websocket::connection &conn){
-                std::cout << "WebSocket Connected!" << '\n';
-            })
+            std::cout << "WebSocket Connected!" << '\n';
+        })
 
         .onclose([&](crow::websocket::connection &conn, const std::string &msg, unsigned short code){
-                Sending_thread::empty_();
+            Sending_thread::empty_();
 
-                std::cout << code << ", WebSocket Closed : " << msg << '\n'; 
-            })
+            std::cout << code << ", WebSocket Closed : " << msg << '\n'; 
+        })
 
         .onmessage([](crow::websocket::connection &conn, const std::string &data, bool is_binary){ 
-                return Upload::upload_(conn, data, is_binary); 
-            });
+            return Upload::upload_(conn, data, is_binary); 
+        });
 
     CROW_ROUTE(app, "/test")([](){
         return "Testing! the server is on running!";

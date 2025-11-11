@@ -12,6 +12,7 @@
 #include <Queue.h>
 #include <Colors.h>
 #include <Torch.h>
+#include <Yolo_inference.h>
 
 extern std::atomic<bool> running;
 unsigned short Image_threads::num_thread = 0;
@@ -20,8 +21,12 @@ Queue<std::tuple<crow::websocket::connection*, cv::Mat>> Image_threads::work_que
 std::mutex Image_threads::exclude;
 
 void Image_threads::work(){
-    Torch hand_model{"./models/hand_model_c.pt"};
-    Torch finger_model{"./models/hand_model_c.pt"};
+    // Torch hand_model{"./models/hand_model_c.pt"};
+    // Torch finger_model{"./models/hand_model_c.pt"};
+    const std::string modelpath = "./models/yolov5s.onnx";
+    const std::string classpath = "./model/classes.txt";
+    Inference inf(modelpath, cv::Size(640, 640), classpath, false);
+
     while (running) {
         std::unique_lock<std::mutex> lock(exclude);
         if (work_queue.get_length() == 0) {
@@ -37,13 +42,19 @@ void Image_threads::work(){
         cv::Mat gray = Colors::gray(img).clone();
         cv::Mat blue = Colors::blue(img).clone();
 
-        const int hand = hand_model.process(img);
-        const int finger = finger_model.process(img);
+        std::vector<Detection> output = inf.runInference(img);
+        cv::Mat yolo = inf.draw_box(img, output);
+        
+
+        // const int hand = hand_model.process(img);
+        // const int finger = finger_model.process(img);
+
 
         Sending_thread::push_(conn, "image_gray", std::string((char*)gray.data, gray.total() * gray.elemSize()));
         Sending_thread::push_(conn, "image_blue", std::string((char*)blue.data, blue.total() * blue.elemSize()));
-        Sending_thread::push_(conn, "string_hand", std::to_string(hand));
-        Sending_thread::push_(conn, "string_finger", std::to_string(finger));
+        Sending_thread::push_(conn, "image_yolo", std::string((char*)yolo.data, yolo.total() * yolo.elemSize()));
+        // Sending_thread::push_(conn, "string_hand", std::to_string(hand));
+        // Sending_thread::push_(conn, "string_finger", std::to_string(finger));
 
     }
 

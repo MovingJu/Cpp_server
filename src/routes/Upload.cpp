@@ -6,8 +6,8 @@
 #include <crow.h>
 
 #include <Upload.h>
-#include <Image_threads.h>
 #include <Colors.h>
+#include <Image_threads.h>
 
 void Upload::upload_(crow::websocket::connection& conn, const std::string& data, bool is_binary){
     if (!is_binary) {return;}

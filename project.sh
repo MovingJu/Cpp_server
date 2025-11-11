@@ -22,6 +22,11 @@ docker-push(){
 		movingju/test:$docker_img_tag
 }
 
+release(){
+	cmake . -B build -DCMAKE_BUILD_TYPE=release
+	cmake --build build
+}
+
 build(){
 	cmake . -B build
 	cmake --build build
