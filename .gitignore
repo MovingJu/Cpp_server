@@ -1,7 +1,7 @@
 .DS_Store
 
 e
-build/*
+build*
 .vscode
 
 libtorch

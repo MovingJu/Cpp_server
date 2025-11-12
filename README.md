@@ -1,12 +1,34 @@
-# CPP_Server
+# Cpp_server
 
-제 첫 cpp server WebSocket 서버입니다.
+This is repository that have code for [on-vacation-project](https://github.com/MovingJu/On-vacation-project)'s backend.
 
-# Dependencies
+# Where can I test or download binary?
 
-- OpenCV
-- LibTorch
+Come visit my website : [On vacation project](https://onvacation.movingju.com)
 
-LibTorch의 경우 프로젝트 폴더에 설치 후 빌드해주세요.
+# Dependency
 
-c++ 의존성 관리가 힘드니 테스트의 경우 도커를 활용해주세요.
+- OpenCV : This is ONLY library my project depends on.
+
+I couldn't find out how to become independent from OpenCV, while doing inference with .onnx and tranforming images.
+
+Luckily, I found way to statically link OpenCV.
+
+# How to download and compile
+
+First, pull this repository and update submodules.
+```bash
+git clone https://github.com/MovingJu/Cpp_server
+cd Cpp_server
+git submodule update --init --recursive
+```
+
+Second, compile this project.
+```bash
+source ./project.sh
+sync
+build
+```
+
+> Note: This repository doesn't include yolov5s.onnx model, because of its size.
+> If you want to fully test this repo, please download yolov5s.onnx model and move it to models/ folder.
