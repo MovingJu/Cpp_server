@@ -1,32 +1,6 @@
 #!/bin/sh
 
-: "${platform:=linux/arm64}"
-: "${docker_img_tag:=cpp_serer}"
-: "${port:=8000}"
-: "${docker_repo:=public}"
-
-docker-build() {
-	docker buildx build \
-		--platform $platform \
-		-t movingju/$docker_repo:$docker_img_tag \
-		.
-}
-
-docker-run() {
-	docker run \
-		-p $port:8000 \
-		movingju/$docker_repo:$docker_img_tag
-}
-
-docker-push(){
-	docker push \
-		movingju/$docker_repo:$docker_img_tag
-}
-
-release(){
-	cmake . -B build -DCMAKE_BUILD_TYPE=release
-	cmake --build build
-}
+: "${BUILD_TYPE:=build_type}"
 
 sync() {
 	mkdir build_opencv
@@ -56,9 +30,14 @@ sync() {
 	cd ..
 }
 
+release(){
+	cmake . -B build -DCMAKE_BUILD_TYPE=release
+	cmake --build build
+}
+
 
 build(){
-	cmake . -B build
+	cmake . -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 	cmake --build build
 }
 
