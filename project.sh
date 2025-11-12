@@ -1,6 +1,6 @@
 #!/bin/sh
 
-: "${BUILD_TYPE:=build_type}"
+: "${build_type:=debug}"
 
 sync() {
 	mkdir build_opencv
@@ -35,9 +35,8 @@ release(){
 	cmake --build build
 }
 
-
 build(){
-	cmake . -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+	cmake . -B build -DCMAKE_BUILD_TYPE=$build_type
 	cmake --build build
 }
 
