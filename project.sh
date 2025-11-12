@@ -3,10 +3,20 @@
 : "${build_type:=debug}"
 
 sync() {
+	mkdir build_eigen
+	cd build_eigen
+	cmake ../eigen \
+		-DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+		-DCMAKE_BUILD_TYPE=Release
+	make -j4
+	make install DESTDIR=./install_eigen
+	cd ..
+	return
 	mkdir build_opencv
 	cd build_opencv
 	cmake ../opencv \
 		-DCMAKE_BUILD_TYPE=Release \
+		-DBUILD_LIST=core,imgproc,dnn \
 		-DBUILD_WITH_STATIC_CRT=ON \
 		-DBUILD_opencv_python3=OFF \
 		-DBUILD_opencv_python_bindings_generator=OFF \

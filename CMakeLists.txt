@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(OpenCV_DIR "${CMAKE_SOURCE_DIR}/build_opencv/install_opencv/usr/local/lib/cmake/opencv4")
+set(Eigen_DIR "${CMAKE_SOURCE_DIR}/build_eigen/install_eigen/usr/local/share/eigen3/cmake")
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
